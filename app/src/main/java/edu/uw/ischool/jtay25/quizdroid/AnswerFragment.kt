@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.fragment.app.activityViewModels
-
+import android.util.Log
 class AnswerFragment : Fragment() {
 
     private val args: AnswerFragmentArgs by navArgs()
@@ -40,31 +40,40 @@ class AnswerFragment : Fragment() {
 
         nextButton.setOnClickListener {
             handleNextOrFinish()
-            quizViewModel.resetQuizProgress()
         }
     }
 
     private fun displayAnswers() {
-        // Display the received question text, user's answer, and correct answer
-        userAnswerTextView.text = "Your Answer: ${args.options[args.userAnswer]}"
-        correctAnswerTextView.text = "Correct Answer: ${args.options[args.correctAnswer]}"
-        progressTextView.text = "You have ${args.progress} out of ${args.totalQuestions} correct"
+        val userAnswer = args.userAnswer
+        val currentQuestion = quizViewModel.getCurrentQuestion()
 
-        // Update the button text
-        if (args.progress == args.totalQuestions) {
-            nextButton.text = "Finish"
-        } else {
-            nextButton.text = "Next"
+        if (currentQuestion != null) {
+            userAnswerTextView.text = "Your Answer: ${currentQuestion.answers[userAnswer]}"
+            correctAnswerTextView.text = "Correct Answer: ${currentQuestion.answers[currentQuestion.correctAnswerIndex]}"
+            progressTextView.text = "You have ${quizViewModel.correctAnswers} out of ${quizViewModel.totalQuestions} correct"
+
+            if (quizViewModel.currentQuestionIndex >= quizViewModel.totalQuestions - 1) {
+                nextButton.text = "Finish"
+            } else {
+                nextButton.text = "Next"
+            }
         }
     }
 
     private fun handleNextOrFinish() {
-        if (args.progress < args.totalQuestions) {
-            findNavController().navigate(R.id.action_answerFragment_to_questionFragment)
+        Log.d("AnswerFragment", "Current Question Index before increment: ${quizViewModel.currentQuestionIndex}")
+
+        if (quizViewModel.currentQuestionIndex < quizViewModel.totalQuestions - 1) {
+            quizViewModel.incrementQuestionIndex()
+
+            Log.d("AnswerFragment", "Current Question Index after increment: ${quizViewModel.currentQuestionIndex}")
+
+            val action = AnswerFragmentDirections.actionAnswerFragmentToQuestionFragment(quizViewModel.currentTopic?.title ?: "")
+            findNavController().navigate(action)
         } else {
-            findNavController().navigate(R.id.action_answerFragment_to_HomeFragment)
+            Log.d("AnswerFragment", "Quiz complete. Resetting quiz progress.")
+            quizViewModel.resetQuizProgress()
+            findNavController().navigate(R.id.action_answerFragment_to_homeFragment)
         }
     }
-
-
 }

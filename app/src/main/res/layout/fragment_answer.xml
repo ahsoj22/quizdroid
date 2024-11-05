@@ -1,39 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
     <TextView
+        android:id="@+id/questionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:text="Question Results"
+        android:textSize="20sp" />
+
+    <TextView
         android:id="@+id/userAnswerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your Answer:"
+        android:text="Your Answer: Option"
         android:textSize="18sp"
-        android:layout_marginBottom="8dp" />
+        android:paddingBottom="8dp" />
 
     <TextView
         android:id="@+id/correctAnswerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Correct Answer:"
+        android:text="Correct Answer: Option"
         android:textSize="18sp"
-        android:layout_marginBottom="8dp" />
+        android:paddingBottom="16dp" />
 
     <TextView
         android:id="@+id/progressTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Progress: "
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp" />
+        android:text="You have X out of Y correct"
+        android:textSize="16sp"
+        android:paddingBottom="16dp" />
 
     <Button
         android:id="@+id/nextButton"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Next"
-        android:textSize="18sp" />
+        android:layout_gravity="center_horizontal" />
 </LinearLayout>

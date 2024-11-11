@@ -22,14 +22,6 @@
         android:textSize="18sp"
         android:paddingBottom="8dp" />
 
-    <TextView
-        android:id="@+id/longDescriptionTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Long Description"
-        android:textSize="16sp"
-        android:paddingBottom="16dp" />
-
     <Button
         android:id="@+id/beginButton"
         android:layout_width="wrap_content"

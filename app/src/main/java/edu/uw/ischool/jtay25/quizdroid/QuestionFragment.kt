@@ -1,27 +1,27 @@
 package edu.uw.ischool.jtay25.quizdroid
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.lifecycle.ViewModelProvider
 
 class QuestionFragment : Fragment() {
 
-    private val quizViewModel: QuizViewModel by activityViewModels()
     private val args: QuestionFragmentArgs by navArgs()
+    private lateinit var quizViewModel: QuizViewModel
 
     private lateinit var questionTextView: TextView
-    private lateinit var radioGroup: RadioGroup
+    private lateinit var option1: RadioButton
+    private lateinit var option2: RadioButton
+    private lateinit var option3: RadioButton
+    private lateinit var option4: RadioButton
     private lateinit var submitButton: Button
 
     override fun onCreateView(
@@ -34,56 +34,77 @@ class QuestionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val app = requireActivity().application as QuizApp
+        val factory = QuizViewModelFactory(app)
+        quizViewModel = ViewModelProvider(requireActivity(), factory).get(QuizViewModel::class.java)
+
         questionTextView = view.findViewById(R.id.questionView)
-        radioGroup = view.findViewById(R.id.radioGroup)
+        option1 = view.findViewById(R.id.radioButton1)
+        option2 = view.findViewById(R.id.radioButton2)
+        option3 = view.findViewById(R.id.radioButton3)
+        option4 = view.findViewById(R.id.radioButton4)
         submitButton = view.findViewById(R.id.submitBtn)
 
-        Log.d("QuestionFragment", "Current Question Index in onViewCreated: ${quizViewModel.currentQuestionIndex}")
+        val currentQuestion = quizViewModel.getCurrentQuestion()
 
-        quizViewModel.loadTopic(args.topicTitle)
-
-        displayCurrentQuestion()
+        currentQuestion?.let {
+            questionTextView.text = it.text
+            option1.text = it.answers[0]
+            option2.text = it.answers[1]
+            option3.text = it.answers[2]
+            option4.text = it.answers[3]
+        }
 
         submitButton.setOnClickListener {
-            val selectedAnswerIndex = getSelectedAnswer()
-            if (selectedAnswerIndex != null) {
-                val isCorrect = quizViewModel.submitAnswer(selectedAnswerIndex)
-                val action = QuestionFragmentDirections.actionQuestionFragmentToAnswerFragment(selectedAnswerIndex)
+            val selectedAnswer = when {
+                option1.isChecked -> 0
+                option2.isChecked -> 1
+                option3.isChecked -> 2
+                option4.isChecked -> 3
+                else -> -1
+            }
+
+            if (selectedAnswer != -1) {
+                val isCorrect = quizViewModel.submitAnswer(selectedAnswer)
+                val action = QuestionFragmentDirections.actionQuestionFragmentToAnswerFragment(
+                    userAnswer = selectedAnswer,
+                    correctAnswer = currentQuestion?.correctAnswerIndex ?: -1,
+                    progress = quizViewModel.correctAnswers,
+                    totalQuestions = quizViewModel.totalQuestions
+                )
                 findNavController().navigate(action)
-            } else {
-                Toast.makeText(context, "Please select an answer", Toast.LENGTH_SHORT).show()
             }
         }
     }
-
     private fun displayCurrentQuestion() {
         val question = quizViewModel.getCurrentQuestion()
-
-        if (question != null) {
-            questionTextView.text = question.text
-            val radioButtons = listOf(
-                view?.findViewById<RadioButton>(R.id.radioButton1),
-                view?.findViewById<RadioButton>(R.id.radioButton2),
-                view?.findViewById<RadioButton>(R.id.radioButton3),
-                view?.findViewById<RadioButton>(R.id.radioButton4)
-            )
-
-            question.answers.forEachIndexed { index, answer ->
-                radioButtons[index]?.text = answer
-            }
-        } else {
-            Log.e("QuestionFragment", "Failed to load current question. Index out of bounds?")
+        question?.let {
+            questionTextView.text = it.text
+            option1.text = it.answers[0]
+            option2.text = it.answers[1]
+            option3.text = it.answers[2]
+            option4.text = it.answers[3]
         }
     }
 
     private fun getSelectedAnswer(): Int? {
-        val selectedRadioButtonId = radioGroup.checkedRadioButtonId
-        return when (selectedRadioButtonId) {
-            R.id.radioButton1 -> 0
-            R.id.radioButton2 -> 1
-            R.id.radioButton3 -> 2
-            R.id.radioButton4 -> 3
+        return when {
+            option1.isChecked -> 0
+            option2.isChecked -> 1
+            option3.isChecked -> 2
+            option4.isChecked -> 3
             else -> null
         }
+    }
+
+    private fun navigateToAnswerFragment(isCorrect: Boolean, selectedAnswer: Int) {
+        val currentQuestion = quizViewModel.getCurrentQuestion() ?: return
+        val action = QuestionFragmentDirections.actionQuestionFragmentToAnswerFragment(
+            userAnswer = selectedAnswer,
+            correctAnswer = currentQuestion.correctAnswerIndex,
+            progress = quizViewModel.correctAnswers,
+            totalQuestions = quizViewModel.totalQuestions
+        )
+        findNavController().navigate(action)
     }
 }

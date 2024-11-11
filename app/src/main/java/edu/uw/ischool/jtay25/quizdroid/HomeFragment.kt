@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 
 class HomeFragment : Fragment() {
 
-    private lateinit var topicRepository: TopicRepository
+    private lateinit var topicsContainer: ViewGroup
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,20 +22,19 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        topicRepository = (requireActivity().application as QuizApp).topicRepository
+        topicsContainer = view.findViewById(R.id.topic_container)
+        val topicRepository = (requireActivity().application as QuizApp).topicRepository
         val topics = topicRepository.getAllTopics()
 
-        // For each topic, create a button dynamically
-        val container = view.findViewById<ViewGroup>(R.id.topic_container)
         topics.forEach { topic ->
-            val button = Button(requireContext()).apply {
+            val topicButton = Button(context).apply {
                 text = topic.title
                 setOnClickListener {
                     val action = HomeFragmentDirections.actionHomeFragmentToTopicOverviewFragment(topic.title)
                     findNavController().navigate(action)
                 }
             }
-            container.addView(button)
+            topicsContainer.addView(topicButton)
         }
     }
 }

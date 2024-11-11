@@ -63,6 +63,19 @@
             android:name="userAnswer"
             app:argType="integer" />
 
+        <argument
+            android:name="correctAnswer"
+            app:argType="integer" />
+
+        <argument
+            android:name="progress"
+            app:argType="integer" />
+
+        <argument
+            android:name="totalQuestions"
+            app:argType="integer" />
+
+
         <action
             android:id="@+id/action_answerFragment_to_questionFragment"
             app:destination="@id/questionFragment" />

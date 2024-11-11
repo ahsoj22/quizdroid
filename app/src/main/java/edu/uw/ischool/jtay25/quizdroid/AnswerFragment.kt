@@ -68,11 +68,12 @@ class AnswerFragment : Fragment() {
 
             Log.d("AnswerFragment", "Current Question Index after increment: ${quizViewModel.currentQuestionIndex}")
 
-            val action = AnswerFragmentDirections.actionAnswerFragmentToQuestionFragment(quizViewModel.currentTopic?.title ?: "")
+            val action = AnswerFragmentDirections.actionAnswerFragmentToQuestionFragment(quizViewModel.currentTopic?.title
+                ?: "")
             findNavController().navigate(action)
         } else {
             Log.d("AnswerFragment", "Quiz complete. Resetting quiz progress.")
-            quizViewModel.resetQuizProgress()
+            quizViewModel.isQuizFinished()
             findNavController().navigate(R.id.action_answerFragment_to_homeFragment)
         }
     }

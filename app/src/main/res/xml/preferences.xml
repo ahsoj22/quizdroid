@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="question_data_url"
+        android:title="Question Data URL"
+        android:summary="Enter the URL for the question data"
+        android:defaultValue="http://tednewardsandbox.site44.com/questions.json" />
+
+    <EditTextPreference
+        android:key="refresh_rate"
+        android:title="Refresh Rate (minutes)"
+        android:summary="How often to check for new downloads"
+        android:inputType="number"
+        android:defaultValue="30" />
+
+</PreferenceScreen>
